@@ -39,7 +39,7 @@ def text_tokenizer(input: str) -> list:
     return wordsList
 
 input = 'This is the first document This document is the second document And this is the third one Is this the first document'
-vectorizer = CountVectorizer()
+vectorizer = CountVectorizer(tokenizer=text_tokenizer)
 tokenized_text = text_tokenizer(input)
 print(tokenized_text)
 X_transform = vectorizer.fit_transform(tokenized_text)
