@@ -2,6 +2,7 @@ import re
 import pandas as pd
 import matplotlib.pyplot
 import sklearn
+import csv
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -38,10 +39,27 @@ def text_tokenizer(input: str) -> list:
     wordsList = textFiltering(wordsList)
     return wordsList
 
+def createBow(wordList: list):
+    bow = []
+    for word in wordList:
+        obj = {word: 0}
+        bow.append(obj)
+    return bow
+
+
+
 input = 'This is the first document This document is the second document And this is the third one Is this the first document'
 vectorizer = CountVectorizer(tokenizer=text_tokenizer)
 tokenized_text = text_tokenizer(input)
 print(tokenized_text)
+
+bow = createBow(tokenized_text)
+print(bow)
+
+wc = WordCloud()
+#wc.generate_from_frequencies(bow)
+
+
 X_transform = vectorizer.fit_transform(tokenized_text)
 print(X_transform.toarray())
 
