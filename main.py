@@ -39,11 +39,13 @@ def text_tokenizer(input: str) -> list:
     wordsList = textFiltering(wordsList)
     return wordsList
 
-def createBow(wordList: list):
-    bow = []
-    for word in wordList:
-        obj = {word: 0}
-        bow.append(obj)
+def createBow(words: list) -> dict:
+    bow = {}
+    for word in words:
+        if word not in bow.keys():
+            bow[word] = 1
+        else:
+            bow[word] += 1
     return bow
 
 
@@ -57,8 +59,11 @@ bow = createBow(tokenized_text)
 print(bow)
 
 wc = WordCloud()
-#wc.generate_from_frequencies(bow)
+wc.generate_from_frequencies(bow)
 
+matplotlib.pyplot.imshow(wc, interpolation='bilinear')
+matplotlib.pyplot.axis("off")
+matplotlib.pyplot.show()
 
 X_transform = vectorizer.fit_transform(tokenized_text)
 print(X_transform.toarray())
