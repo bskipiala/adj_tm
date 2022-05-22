@@ -8,6 +8,12 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, BaggingClassifier
+from sklearn.svm import LinearSVC
+from sklearn import metrics
+
 from wordcloud import WordCloud
 from tqdm import tqdm
 
@@ -49,10 +55,14 @@ def createBow(words: list) -> dict:
     return bow
 
 
+col_list = ["rating", "verified_reviews"]
+input = pd.read_csv('alexa_reviews.csv', sep=";", encoding='cp1252', usecols=col_list)
+print(input.head())
+rating = input['rating']
+verified_reviews = input['verified_reviews']
 
-input = 'This is the first document This document is the second document And this is the third one Is this the first document'
-vectorizer = CountVectorizer(tokenizer=text_tokenizer)
-tokenized_text = text_tokenizer(input)
+verified_reviews = " ".join(verified_reviews)
+tokenized_text = text_tokenizer(verified_reviews)
 print(tokenized_text)
 
 bow = createBow(tokenized_text)
@@ -64,7 +74,3 @@ wc.generate_from_frequencies(bow)
 matplotlib.pyplot.imshow(wc, interpolation='bilinear')
 matplotlib.pyplot.axis("off")
 matplotlib.pyplot.show()
-
-X_transform = vectorizer.fit_transform(tokenized_text)
-print(X_transform.toarray())
-
