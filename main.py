@@ -65,6 +65,3 @@ matplotlib.pyplot.imshow(wc, interpolation='bilinear')
 matplotlib.pyplot.axis("off")
 matplotlib.pyplot.show()
 
-X_transform = vectorizer.fit_transform(tokenized_text)
-print(X_transform.toarray())
-
