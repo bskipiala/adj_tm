@@ -1,12 +1,15 @@
 import re
+
 import pandas as pd
-import matplotlib.pyplot
+import matplotlib.pyplot as plt
 import sklearn
 import csv
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import plot_confusion_matrix, ConfusionMatrixDisplay
 
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -55,22 +58,48 @@ def createBow(words: list) -> dict:
     return bow
 
 
-col_list = ["rating", "verified_reviews"]
-input = pd.read_csv('alexa_reviews.csv', sep=";", encoding='cp1252', usecols=col_list)
-print(input.head())
-rating = input['rating']
-verified_reviews = input['verified_reviews']
+df = pd.read_csv('reviews.csv')
+print(df.head())
+df.info()
+df = df.drop_duplicates()
+print(df.groupby('Sentiment').describe())
 
-verified_reviews = " ".join(verified_reviews)
-tokenized_text = text_tokenizer(verified_reviews)
-print(tokenized_text)
+vectorizer = CountVectorizer(ngram_range=(1, 2), stop_words='english', min_df=20)
+x = vectorizer.fit_transform(df['Text'])
+y = df['Sentiment']
 
-bow = createBow(tokenized_text)
-print(bow)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.5, random_state=0)
 
-wc = WordCloud()
-wc.generate_from_frequencies(bow)
+model = LogisticRegression(max_iter=1000, random_state=0)
+model.fit(x_train, y_train)
 
-matplotlib.pyplot.imshow(wc, interpolation='bilinear')
-matplotlib.pyplot.axis("off")
-matplotlib.pyplot.show()
+disp = ConfusionMatrixDisplay.from_estimator(model, x_test, y_test, display_labels=['Negative', 'Positive'], cmap='Blues', xticks_rotation='vertical')
+plt.show()
+
+text1 = 'The long lines and poor customer service really turned me off'
+score1 = model.predict_proba(vectorizer.transform([text1]))[0][1]
+print(score1)
+
+text2 = 'The food was great and the service was excellent'
+score2 = model.predict_proba(vectorizer.transform([text2]))[0][1]
+print(score2)
+
+
+
+
+# rating = input['rating']
+# verified_reviews = input['verified_reviews']
+#
+# verified_reviews = " ".join(verified_reviews)
+# tokenized_text = text_tokenizer(verified_reviews)
+# print(tokenized_text)
+#
+# bow = createBow(tokenized_text)
+# print(bow)
+#
+# wc = WordCloud()
+# wc.generate_from_frequencies(bow)
+#
+# matplotlib.pyplot.imshow(wc, interpolation='bilinear')
+# matplotlib.pyplot.axis("off")
+# matplotlib.pyplot.show()
