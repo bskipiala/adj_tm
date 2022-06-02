@@ -2,21 +2,16 @@ import re
 
 import pandas as pd
 import matplotlib.pyplot as plt
-import sklearn
-import csv
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import plot_confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import plot_confusion_matrix, ConfusionMatrixDisplay, accuracy_score
 
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, BaggingClassifier
 from sklearn.svm import LinearSVC
-from sklearn import metrics
 
 from wordcloud import WordCloud
 from tqdm import tqdm
@@ -83,15 +78,41 @@ transform_tf = tf.fit_transform(reviews)
 
 x_train, x_test, y_train, y_test = train_test_split(transform_tf, dataset['label'], test_size=0.5, random_state=0)
 
-model = LogisticRegression(max_iter=1000, random_state=0)
-model.fit(x_train, y_train)
-disp = ConfusionMatrixDisplay.from_estimator(model, x_test, y_test, display_labels=['Negative', 'Positive'], cmap='Blues', xticks_rotation='vertical')
+logisticRegressionModel = LogisticRegression(max_iter=1000, random_state=0)
+logisticRegressionModel.fit(x_train, y_train)
+disp = ConfusionMatrixDisplay.from_estimator(logisticRegressionModel, x_test, y_test, display_labels=['Negative', 'Positive'], cmap='Blues', xticks_rotation='vertical')
 plt.show()
 
-text1 = 'The long time of displaying ads was annoying'
-score1 = model.predict_proba(tf.transform([text1]))[0][1]
-print(score1)
+preds = logisticRegressionModel.predict(x_test)
+print("Logistic regression accuracy score:")
+print(accuracy_score(y_test, preds))
 
-text2 = 'The movie was great and the service was excellent'
-score2 = model.predict_proba(tf.transform([text2]))[0][1]
-print(score2)
+textNegative = 'The long time of displaying ads was annoying'
+textPositive = 'The movie was great and the service was excellent'
+
+scoreNegative = logisticRegressionModel.predict_proba(tf.transform([textNegative]))[0][1]
+print("Logistic regression negative text score:")
+print(scoreNegative)
+scorePositive = logisticRegressionModel.predict_proba(tf.transform([textPositive]))[0][1]
+print("Logistic regression positive text score:")
+print(scorePositive)
+
+lsvc = LinearSVC()
+lsvc.fit(x_train, y_train)
+disp = ConfusionMatrixDisplay.from_estimator(lsvc, x_test, y_test, display_labels=['Negative', 'Positive'], cmap='Blues', xticks_rotation='vertical')
+plt.show()
+
+preds = lsvc.predict(x_test)
+print("LinearSVC accuracy score:")
+print(accuracy_score(y_test, preds))
+
+clf = CalibratedClassifierCV(lsvc)
+clf.fit(x_train, y_train)
+
+scoreNegative = clf.predict_proba(tf.transform([textNegative]))[0][1]
+print("LinearSVC negative text score:")
+print(scoreNegative)
+scorePositive = clf.predict_proba(tf.transform([textPositive]))[0][1]
+print("LinearSVC positive text score:")
+print(scorePositive)
+
