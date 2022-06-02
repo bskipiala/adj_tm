@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import plot_confusion_matrix, ConfusionMatrixDisplay, accuracy_score
+from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score
 
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
