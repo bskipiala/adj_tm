@@ -75,7 +75,6 @@ plt.show()
 
 tf = TfidfVectorizer(tokenizer=text_tokenizer)
 transform_tf = tf.fit_transform(reviews)
-
 x_train, x_test, y_train, y_test = train_test_split(transform_tf, dataset['label'], test_size=0.5, random_state=0)
 
 logisticRegressionModel = LogisticRegression(max_iter=1000, random_state=0)
